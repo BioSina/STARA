@@ -1,5 +1,5 @@
 Welcome to the CommunAl Community!
-TaxCo is a part of the CommunAl toolkit for analysis of microbial communities. As such, we want to have a thriving and friendly community ourselves.
+STARA is a part of the CommunAl toolkit for analysis of microbial communities. As such, we want to have a thriving and friendly community ourselves.
 
  - Steps for creating good issues or pull requests:
       There are templates for issues/bugs, feature requests and "unidentified other issues". Please do use them.
