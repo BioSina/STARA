@@ -55,7 +55,7 @@ global loghandle
 #read in config file
 def readConfig(config):
     print("Reading configuration file."),
-    with open(config, 'rU') as c:
+    with open(config) as c:
         print("."),
         for line in c:
             if (not(line.startswith("#")) and not(line == "\n")):
@@ -187,19 +187,19 @@ def trim(samplename, trimdir, rawdir):
                     file1 = temp
     if variables["compressed"]:
         outfile1 = open(tempdir+"/"+samplename+".fastq", 'w')
-        command = subprocess.Popen([variables["gzip"],'-dc', file1], stdout=subprocess.PIPE)
-        outfile1.writelines(command.stdout)
+        command = subprocess.Popen([variables["gzip"],'-dc', file1], stdout=outfile1)
+        #outfile1.writelines((command.stdout).read())
         command.wait()
         outfile1.close()
         if(variables["paired"]):
             outfile1 = open(tempdir+"/"+samplename+variables["pairID1"]+".fastq", 'w')
-            command = subprocess.Popen([variables["gzip"],'-dc', file1], stdout=subprocess.PIPE)
-            outfile1.writelines(command.stdout)
+            command = subprocess.Popen([variables["gzip"],'-dc', file1], stdout=outfile1)
+            #outfile1.writelines((command.stdout).read())
             command.wait()
             outfile1.close()
             outfile2 = open(tempdir+"/"+samplename+variables["pairID2"]+".fastq", 'w')
-            command = subprocess.Popen([variables["gzip"],'-dc', file2], stdout=subprocess.PIPE)
-            outfile2.writelines(command.stdout)
+            command = subprocess.Popen([variables["gzip"],'-dc', file2], stdout=outfile2)
+            #outfile2.writelines((command.stdout).read())
             command.wait()
             outfile2.close()
     else:
@@ -334,7 +334,7 @@ def fastqcData(qcdata):
     mini = 0
     maxi = 0
     num = 0
-    with open(qcdata, 'rU') as qc:
+    with open(qcdata) as qc:
         for line in qc:
             line = re.sub('\n', "", line)
             #number of sequences
