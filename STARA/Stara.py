@@ -17,7 +17,7 @@ import argparse
 variables = dict()
 variables["FASTQC"] = "fastqc"
 variables["gzip"] = "gzip"
-variables["prinseq"] = "prinseq-lite.pl"
+variables["prinseq"] = "prinseq++"
 variables["flash"] = "flash"
 variables["maltrun"] = "malt-run"
 
@@ -210,7 +210,8 @@ def trim(samplename, trimdir, rawdir):
         else:
             command = subprocess.Popen(['cp', file1, tempdir+"/"+samplename+".fastq"])
     if(variables["paired"]):
-        command = subprocess.Popen([variables["perl"], variables["prinseq"], '-fastq',tempdir+"/"+samplename+variables["pairID1"]+".fastq", '-fastq2',tempdir+"/"+samplename+variables["pairID2"]+".fastq", '-log',trimdir+"/"+samplename+".log", '-trim_qual_window',str(variables["trimwindow"]), '-trim_qual_right',str(variables["trimqual"]),
+
+        command = subprocess.Popen([variables["prinseq"], '-fastq',tempdir+"/"+samplename+variables["pairID1"]+".fastq", '-fastq2',tempdir+"/"+samplename+variables["pairID2"]+".fastq", '-threads', '20', '-log',trimdir+"/"+samplename+".log", '-trim_qual_window',str(variables["trimwindow"]), '-trim_qual_right',str(variables["trimqual"]),
                                    '-trim_left',str(variables["lefttrim"]), '-out_good',trimdir+"/"+samplename+".trim.good", '-out_bad',trimdir+"/"+samplename+".trim.bad"])
         command.wait()
         newname = samplename+".trimmed"+variables["pairID1"]+"fastq"
@@ -224,8 +225,8 @@ def trim(samplename, trimdir, rawdir):
         command = subprocess.Popen(['mv',infile, outfile])
         command.wait()
     else:
-        command = subprocess.Popen([variables["perl"], variables["prinseq"], '-fastq',tempdir+"/"+samplename+".fastq", '-log',trimdir+"/"+samplename+".log", '-trim_qual_window',str(variables["trimwindow"]), '-trim_qual_right',str(variables["trimqual"]),
-                                   '-trim_left',str(variables["lefttrim"]), '-out_good',trimdir+"/"+samplename+".trim.good", '-out_bad',trimdir+"/"+samplename+".trim.bad"])
+        command = subprocess.Popen([variables["prinseq"], '-fastq',tempdir+"/"+samplename+".fastq", '-log',trimdir+"/"+samplename+".log", '-threads', '20', '-trim_qual_window',str(variables["trimwindow"]), '-trim_qual_right',str(variables["trimqual"]),
+                                   '-trim_left', str(variables["lefttrim"]), '-out_good', trimdir+"/"+samplename+".trim.good", '-out_bad', trimdir+"/"+samplename+".trim.bad"])
         command.wait()
         newname = samplename+".trimmed.fastq"
         outfile = trimdir+"/"+newname
@@ -275,7 +276,8 @@ def malt(samplename, aligneddir, filterdir):
         os.makedirs(os.getcwd()+"/"+aligneddir)
     infile = filterdir+"/"+samplename+".filtered.good.fastq"
     outfile =aligneddir+"/"+samplename+".rma"
-    command = subprocess.Popen([variables["maltrun"], '-m', 'BlastN', '-at', 'SemiGlobal','-t','20','-rqc','true','-supp',str(variables["maltsupp"]),'-e', str(variables["malteval"]), '-mpi', str(75.0),'-top', str(10.0),'-i',infile,'-d',variables["maltbase"], '-o',outfile])
+    #I had to replace outfile with aligneddir, because MALT is broken
+    command = subprocess.Popen([variables["maltrun"], '-m', 'BlastN', '-at', 'SemiGlobal','-t','20','-rqc','true','-supp',str(variables["maltsupp"]),'-e', str(variables["malteval"]), '-mpi', str(75.0),'-top', str(10.0),'-i',infile,'-d',variables["maltbase"], '-o',aligneddir])
     command.wait()
     loghandle.write(str(datetime.now())+": Finished alignment successfully\n")
     
