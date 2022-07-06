@@ -78,7 +78,8 @@ def readConfig(config):
     variables["raw2filterloss"] = float(variables["raw2filterloss"])
     variables["trim2filterloss"] = float(variables["trim2filterloss"])
     print(".")
-                
+
+
 #setup for files, if necessary moving input
 def setupFiles(indir, outdir):
     print("Setting up input"),
@@ -127,16 +128,16 @@ def setupFiles(indir, outdir):
     print(".")
     return samples
 
+
 #print Identifiers of all detected samples to logfile
 def printSamples(samples):
     loghandle.write("Samples that will be analyzed: \n")
     for s in samples:
         loghandle.write(s+"\n")
-        
 
-            
+
 #run FastQC on a given sample, either in paired or in single mode
-def  fastqc(samplename, indir, mode ):
+def fastqc(samplename, indir, mode ):
     file1 = ""
     file2 = ""
     loghandle.write(str(datetime.now())+": Started QC\n")
@@ -162,7 +163,7 @@ def  fastqc(samplename, indir, mode ):
     command.wait()
     loghandle.write(str(datetime.now())+": Finished QC successfully\n")
 
-#Trim samples with prinseq-lite
+#Trim samples with prinseq++
 def trim(samplename, trimdir, rawdir):
     loghandle.write(str(datetime.now())+": Started trimming\n")
     if not os.path.exists(os.getcwd()+"/"+trimdir):
@@ -211,7 +212,7 @@ def trim(samplename, trimdir, rawdir):
             command = subprocess.Popen(['cp', file1, tempdir+"/"+samplename+".fastq"])
     if(variables["paired"]):
 
-        command = subprocess.Popen([variables["prinseq"], '-fastq',tempdir+"/"+samplename+variables["pairID1"]+".fastq", '-fastq2',tempdir+"/"+samplename+variables["pairID2"]+".fastq", '-threads', '20', '-log',trimdir+"/"+samplename+".log", '-trim_qual_window',str(variables["trimwindow"]), '-trim_qual_right',str(variables["trimqual"]),
+        command = subprocess.Popen([variables["prinseq"], '-fastq',tempdir+"/"+samplename+variables["pairID1"]+".fastq", '-fastq2',tempdir+"/"+samplename+variables["pairID2"]+".fastq", '-threads', '20', '-trim_qual_window',str(variables["trimwindow"]), '-trim_qual_right',str(variables["trimqual"]),
                                    '-trim_left',str(variables["lefttrim"]), '-out_good',trimdir+"/"+samplename+".trim.good", '-out_bad',trimdir+"/"+samplename+".trim.bad"])
         command.wait()
         newname = samplename+".trimmed"+variables["pairID1"]+"fastq"
@@ -225,7 +226,7 @@ def trim(samplename, trimdir, rawdir):
         command = subprocess.Popen(['mv',infile, outfile])
         command.wait()
     else:
-        command = subprocess.Popen([variables["prinseq"], '-fastq',tempdir+"/"+samplename+".fastq", '-log',trimdir+"/"+samplename+".log", '-threads', '20', '-trim_qual_window',str(variables["trimwindow"]), '-trim_qual_right',str(variables["trimqual"]),
+        command = subprocess.Popen([variables["prinseq"], '-fastq',tempdir+"/"+samplename+".fastq", '-threads', '20', '-trim_qual_window',str(variables["trimwindow"]), '-trim_qual_right',str(variables["trimqual"]),
                                    '-trim_left', str(variables["lefttrim"]), '-out_good', trimdir+"/"+samplename+".trim.good", '-out_bad', trimdir+"/"+samplename+".trim.bad"])
         command.wait()
         newname = samplename+".trimmed.fastq"
