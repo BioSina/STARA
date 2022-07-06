@@ -213,7 +213,7 @@ def trim(samplename, trimdir, rawdir):
     if(variables["paired"]):
 
         command = subprocess.Popen([variables["prinseq"], '-fastq',tempdir+"/"+samplename+variables["pairID1"]+".fastq", '-fastq2',tempdir+"/"+samplename+variables["pairID2"]+".fastq", '-threads', '20', '-trim_qual_window',str(variables["trimwindow"]), '-trim_qual_right',str(variables["trimqual"]),
-                                   '-trim_left',str(variables["lefttrim"]), '-out_good',trimdir+"/"+samplename+".trim.good", '-out_bad',trimdir+"/"+samplename+".trim.bad"])
+                                   '-trim_left',str(variables["lefttrim"]), '-out_good',trimdir+"/"+samplename+".trim.good_1.fastq", '-out_good2',trimdir+"/"+samplename+".trim.good_2.fastq", '-out_bad',trimdir+"/"+samplename+".trim.bad"])
         command.wait()
         newname = samplename+".trimmed"+variables["pairID1"]+"fastq"
         outfile = trimdir+"/"+newname
@@ -262,11 +262,11 @@ def filtering(samplename, filterdir, mergedir):
     if not os.path.exists(os.getcwd()+"/"+filterdir):
         os.makedirs(os.getcwd()+"/"+filterdir)
     if(variables["paired"]):
-        command = subprocess.Popen([variables["perl"], variables["prinseq"], '-fastq',mergedir+"/"+samplename+".merged.fastq", '-log',filterdir+"/"+samplename+".log",
-                                   '-min_len', str(variables["minmergedlength"]), '-out_good',filterdir+"/"+samplename+".filtered.good", '-out_bad',filterdir+"/bad_"+samplename+".filtered.bad"])
+        command = subprocess.Popen([variables["prinseq"], '-fastq',mergedir+"/"+samplename+".merged.fastq", '-threads', '20',
+                                   '-min_len', str(variables["minmergedlength"]), '-out_good',filterdir+"/"+samplename+".filtered.good.fastq", '-out_bad',filterdir+"/bad_"+samplename+".filtered.bad"])
     else:
-        command = subprocess.Popen([variables["perl"], variables["prinseq"], '-fastq',mergedir+"/"+samplename+".trimmed.fastq", '-log',filterdir+"/"+samplename+".log",
-                                   '-min_len', str(variables["minmergedlength"]), '-out_good',filterdir+"/"+samplename+".filtered.good", '-out_bad',filterdir+"/bad_"+samplename+".filtered.bad"])
+        command = subprocess.Popen([variables["prinseq"], '-fastq',mergedir+"/"+samplename+".trimmed.fastq",
+        '-threads', '20','-min_len', str(variables["minmergedlength"]), '-out_good',filterdir+"/"+samplename+".filtered.good.fastq", '-out_bad',filterdir+"/bad_"+samplename+".filtered.bad"])
     command.wait()
     loghandle.write(str(datetime.now())+": Finished filtering successfully\n")
 
